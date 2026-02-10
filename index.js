@@ -175,8 +175,8 @@ app.use((err, req, res, next) => {
 //     .catch(err => console.log(err))
 
 // })
-const monogdb_url = "mongodb+srv://ahmadshakeb:Shakeb.123@cluster0.mjftxwd.mongodb.net/shop?appName=Cluster0/shop"
-mongoose.connect(monogdb_url)
+// const monogdb_url = "mongodb+srv://ahmadshakeb:Shakeb.123@cluster0.mjftxwd.mongodb.net/shop?appName=Cluster0/shop"
+mongoose.connect(process.env.MONGO_URL)
     // .then(result =>{
     //     return User.findOne()     // we needed this untill there was no authentication signup
     //     .then(user =>{
@@ -191,7 +191,7 @@ mongoose.connect(monogdb_url)
     //     })
     .then(result => {
         // https.createServer({key:privateKey,cert:certificate},app).listen(3000,()=>console.log('running on port 3000'))
-        app.listen(3000, () => {
+        app.listen(process.env.PORT, () => {
             console.log(`server is running on port 3000`)
         })
     })
