@@ -1,7 +1,0 @@
-{
-    "env":{
-        "STRIPE_KEY": "sk_test_51Syvn9G9eibKSkswJVLF4tZmf5Lfq6SKPIVbZ26v63VOiwlxiTqWQS9xXhNWNbDgxSik7nHheYQdrrPr9GEOTwHb00oqs0T4Eq",
-        "MONGO_URL": "mongodb+srv://ahmadshakeb:Shakeb.123@cluster0.mjftxwd.mongodb.net/shop?appName=Cluster0/shop",
-        "PORT": 3000
-    }
-}

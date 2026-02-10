@@ -258,8 +258,8 @@ exports.postCheckout = (req, res, next) => {
               quantity: 1,
             },
           ],
-          success_url: '/create-order',
-          cancel_url: '/cart',
+          success_url: `${process.env.CLIENT_URL}/create-order`,
+          cancel_url: `${process.env.CLIENT_URL}/cart`,
         });
 
         res.json({ url: session.url });
