@@ -1,0 +1,29 @@
+<%- include('../includes/head.ejs') %>
+    <link href="/css/cart.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <%- include('../includes/navigation.ejs') %>
+            <%- include('../includes/end.ejs') %>
+                <main>
+                    <% if (products.length>0){ %>
+                        <ul class="cart__item-list">
+                            <% for (let product of products){ %>
+                                <li class="cart__item">
+                                    <h1>
+                                        <%= product.product.title %>
+                                    </h1>
+                                    <h2>Quantity (<%= product.quantity %>)</h2>
+                                </li>
+                                <% } %>
+                        </ul>
+                        <hr>
+                        <div class="centered">
+                            Total: <%= total %>
+                        </div>
+                        <% } %>
+                            <div class="centered">
+                                <button id="payBtn" class="btn" style="margin-top: 10px;">Pay</button>
+                            </div>
+                </main>
+                <script src="/js/checkout.js"></script>
