@@ -60,7 +60,7 @@ app.set('view engine', 'ejs');
 app.set('views', 'views')
 
 const store = new mongodbSession({
-    uri: 'mongodb://localhost:27017/shop',
+    uri: process.env.MONGO_URL,
     collection: "sessions"
 })
 
