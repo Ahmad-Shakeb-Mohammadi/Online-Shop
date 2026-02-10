@@ -1,11 +1,4 @@
 node_modules/
 
-.env
-
-.logs
-
-.DS_Store
-Thumbs.db
-
 server.crt
 server.key

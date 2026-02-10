@@ -176,6 +176,7 @@ app.use((err, req, res, next) => {
 
 // })
 // const monogdb_url = "mongodb+srv://ahmadshakeb:Shakeb.123@cluster0.mjftxwd.mongodb.net/shop?appName=Cluster0/shop"
+console.log(process.env.MONGO_URL)
 mongoose.connect(process.env.MONGO_URL)
     // .then(result =>{
     //     return User.findOne()     // we needed this untill there was no authentication signup
