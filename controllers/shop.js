@@ -258,8 +258,8 @@ exports.postCheckout = (req, res, next) => {
               quantity: 1,
             },
           ],
-          success_url: 'http://localhost:3000/create-order',
-          cancel_url: 'http://localhost:3000/cart',
+          success_url: '/create-order',
+          cancel_url: '/cart',
         });
 
         res.json({ url: session.url });
