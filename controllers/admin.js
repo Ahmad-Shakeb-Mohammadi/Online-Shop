@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 const { validationResult } = require("express-validator")
 const deleteHelper = require("../util/file");
-
+const supabase = require("../middlewares/supabase")
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -76,20 +76,36 @@ exports.postAddProduct = (req, res, next) => {
     })
   }
 
-  const product = new Product({ title, imageUrl: image.path, price, description, user_id: req.user }) // mongoose auto takes id from user.
-  product.save()
-    .then(result => {
-      console.log("product created");
-      res.redirect("/admin/products")
-    })
-    .catch(err => {
-      // console.log("an error occured")
-      console.log(err)                        // lets catch big picture errors gracefully
-      // res.redirect("/500")                 // now instead of doing it here lets pass it to a error handleing middleware
-      let error = new Error(err)
-      error.httpStatusCode = 500;
-      return next(error)                     // calling next by passing err obj then express cleverly escapes all other middlewares and reach err middleware
-    })
+  try {
+    let imageUrl;
+    const fileName = Date.now() + '-' + req.file.originalname;
+    supabase.storage.from("images").upload(fileName, req.file.buffer, { contentType: req.file.mimetype })
+      .then(({ data, error }) => {
+        if (error) throw error;
+        return supabase.storage.from("images").getPublicUrl(fileName)
+      })
+      .then((args) => {
+        if (args.error) next(new Error("Error"));
+        imageUrl = args.data.publicUrl
+        const product = new Product({ title, imageUrl: imageUrl, price, description, user_id: req.user }) // mongoose auto takes id from user.
+        return product.save()
+      })
+      .then(result => {
+        res.redirect("/admin/products")
+      })
+      .catch(err => {
+        // console.log("an error occured")
+        console.log(err)                        // lets catch big picture errors gracefully
+        // res.redirect("/500")                 // now instead of doing it here lets pass it to a error handleing middleware
+        let error = new Error(err)
+        error.httpStatusCode = 500;
+        return next(error)                     // calling next by passing err obj then express cleverly escapes all other middlewares and reach err middleware
+      })
+  } catch (err) {
+    throw err;
+  }
+
+
 };
 
 exports.getEditProduct = (req, res, next) => {

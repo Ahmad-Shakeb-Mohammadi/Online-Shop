@@ -27,35 +27,47 @@ const compression = require("compression")
 const morgan = require("morgan")
 // const https = require("https")
 
-const imageStore = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'images')
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + "-" + file.originalname)
-    }
-})
+// const imageStore = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, 'images')
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, Date.now() + "-" + file.originalname)
+//     }
+// })
 
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
-        cb(null, true)
-    } else {
-        cb(null, false)
-    }
-}
+// const fileFilter = (req, file, cb) => {
+//     if (file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
+//         cb(null, true)
+//     } else {
+//         cb(null, false)
+//     }
+// }
+
+const storage = multer.memoryStorage()
+const upload = multer({storage,limits:{fileSize: 10*1024*1024 }})
+
+
 const accssLogStream = fs.createWriteStream(path.join(__dirname,"access.log"),{flags: 'a'})
 // const privateKey = fs.readFileSync("server.key")
 // const certificate = fs.readFileSync("server.crt")
 
-app.use(helmet())
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            imgSrc: ["'self'","data:","https://*.supabase.co"]
+        }
+    }
+}))
 app.use(compression({
     threshold: 1024
 }))
 app.use(morgan('tiny',{stream: accssLogStream}))
 app.use(express.static(path.join(__dirname, "public")))
-app.use("/images", express.static("images"))
+// app.use("/images", express.static("images"))
 app.use(express.urlencoded({ extended: false }))
-app.use(multer({ storage: imageStore, fileFilter: fileFilter }).single("image"))
+app.use(upload.single("image"))
 app.set('view engine', 'ejs');
 app.set('views', 'views')
 
