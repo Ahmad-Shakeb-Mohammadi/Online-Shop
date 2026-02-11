@@ -479,6 +479,10 @@ form {
   color: red;
 }
 
+.user-message--msg{
+  color: green
+}
+
 .pagination{
   text-align: center;
   margin-top: 2rem;

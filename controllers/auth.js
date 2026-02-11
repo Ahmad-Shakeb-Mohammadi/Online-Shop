@@ -12,6 +12,7 @@ exports.getLogin = (req, res, next) => {
     path: '/login',
     emailMessage: req.flash('emailError'),
     passwordMessage: req.flash("passwordError"),
+    resetMessage: req.flash("resetMessage"),
     oldInputs: {
       email: "",
       password: ""
@@ -156,7 +157,8 @@ exports.postReset = (req, res, next) => {
         if (!user) {
           return null
         }
-        res.redirect("/")
+        req.flash("resetMessage","Reset Link sent to mohammadiahmadshakeb79@gmail.com")
+        res.redirect("/login")
         try {
           const resend = new Resend("re_Abhis9ZZ_MvejwFQq67q9qSVPXRzYuFx9");
           resend.emails.send({
@@ -164,7 +166,7 @@ exports.postReset = (req, res, next) => {
             to: "mohammadiahmadshakeb79@gmail.com",
             subject: "Reset Password",
             html: `<h1>You requested a Password Reset</h1>
-              <p>Click here to <a href='${process.env.SUPABASE_URL}/reset/${token}'>Reset Password</a></p>
+              <p>Click here to <a href='${process.env.CLIENT_URL}/reset/${token}'>Reset Password</a></p>
             `
           })
         } catch (err) {
@@ -220,7 +222,8 @@ exports.postNewPassword = (req, res, next) => {
         return user.save()
       })
         .then(user => {
-          res.redirect("/login")
+          req.flash("resetMessage","Password has been updated successfully!")
+          return res.redirect("/login")
         })
     })
     .catch(err => {

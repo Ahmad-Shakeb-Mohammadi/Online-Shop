@@ -10,6 +10,11 @@
 
                 <form class="login-form" action="/login" method="POST" novalidate>
                     <div class="form-control">
+                        <% if (resetMessage.length>0){ %>
+                            <label class="user-message user-message--msg" for="email">
+                                <%= resetMessage %>
+                            </label>
+                            <% } %>
                         <label for="title">E-Mail</label>
                         <input type="email" name="email" id="email"
                             class="<%= validationErr.find(e => e.path == 'email')? 'invalid': '' %>"
