@@ -36,16 +36,16 @@ const morgan = require("morgan")
 //     }
 // })
 
-// const fileFilter = (req, file, cb) => {
-//     if (file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
-//         cb(null, true)
-//     } else {
-//         cb(null, false)
-//     }
-// }
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
+        cb(null, true)
+    } else {
+        cb(null, false)
+    }
+}
 
 const storage = multer.memoryStorage()
-const upload = multer({storage,limits:{fileSize: 10*1024*1024 }})
+const upload = multer({storage,limits:{fileSize: 10*1024*1024 },fileFilter})
 
 
 const accssLogStream = fs.createWriteStream(path.join(__dirname,"access.log"),{flags: 'a'})
