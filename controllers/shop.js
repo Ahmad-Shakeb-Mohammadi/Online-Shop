@@ -6,7 +6,7 @@ const PDFdoc = require("pdfkit")
 const deleteHelper = require("../util/file");
 const Stripe = require("stripe")
 
-const ITEMS_PER_PAGE = 2
+const ITEMS_PER_PAGE = 6
 
 exports.getProducts = (req, res, next) => {
   // Product.fetchAll() mongodb
