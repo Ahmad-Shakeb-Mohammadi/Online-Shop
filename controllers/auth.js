@@ -54,17 +54,6 @@ exports.postLogin = (req, res, next) => {
             req.session.save(() => {              // you dont need to call this but i needed a callback cause i will be redirected independantly
               res.redirect("/")                    // before session is written in senarios where it takes time to write 
             })
-            try {
-              const resend = new Resend("re_Abhis9ZZ_MvejwFQq67q9qSVPXRzYuFx9");
-              resend.emails.send({
-                from: "Resend <onboarding@resend.dev>",
-                to: "mohammadiahmadshakeb79@gmail.com",
-                subject: "your login",
-                html: `<h1>${email} has successfully logged in</h1>`
-              })
-            } catch (err) {
-              console.log(err)
-            }
           } else {
             req.flash("passwordError", "Password is wrong.")
             return res.redirect("/login")
@@ -102,7 +91,6 @@ exports.getSignup = (req, res) => {
 
 exports.postSignup = (req, res, next) => {
   const result = validationResult(req);
-  console.log(result.array())
   if (!result.isEmpty()) {
     return res.status(422).render("auth/signup", {
       pageTitle: 'Sign Up',
@@ -176,7 +164,7 @@ exports.postReset = (req, res, next) => {
             to: "mohammadiahmadshakeb79@gmail.com",
             subject: "Reset Password",
             html: `<h1>You requested a Password Reset</h1>
-              <p>Click here to <a href='http://localhost:3000/reset/${token}'>Reset Password</a></p>
+              <p>Click here to <a href='${process.env.SUPABASE_URL}/reset/${token}'>Reset Password</a></p>
             `
           })
         } catch (err) {

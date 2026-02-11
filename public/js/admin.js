@@ -19,20 +19,6 @@ const deleteProd = (e)=>{
     .catch(err=>{
         console.log(err)
     })
-    fetch("/user",{
-        method: "POST",
-        body:{
-            name: 'ahmad',
-        },
-        headers:{
-            'csrf-token':csrTok
-        }
-    }).then(user =>{
-        return user.json()
-    })
-    .then(data =>{
-        console.log(data)
-    })
 
 }
 

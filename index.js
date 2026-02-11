@@ -115,9 +115,7 @@ app.use((req, res, next) => {
     next()
 })
 app.use(flash())
-app.post('/user',(req,res,next)=>{
-    res.status(200).json({message:'native fetch api'})
-})
+
 app.use("/admin", adminRoutes)
 app.use(shopRoutes)
 app.use(loginRoutes)
@@ -188,7 +186,6 @@ app.use((err, req, res, next) => {
 
 // })
 // const monogdb_url = "mongodb+srv://ahmadshakeb:Shakeb.123@cluster0.mjftxwd.mongodb.net/shop?appName=Cluster0/shop"
-console.log(process.env.MONGO_URL)
 mongoose.connect(process.env.MONGO_URL)
     // .then(result =>{
     //     return User.findOne()     // we needed this untill there was no authentication signup
@@ -208,8 +205,6 @@ mongoose.connect(process.env.MONGO_URL)
             console.log(`server is running on port 3000`)
         })
     })
-
-
     // })
     .catch(err => {
         console.log(err)
