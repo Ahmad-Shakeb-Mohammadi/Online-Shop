@@ -153,7 +153,7 @@ exports.getEditProduct = (req, res, next) => {
     })
 };
 
-exports.postEditProduct = (req, res, next) => {
+exports.postEditProduct = async (req, res, next) => {
   const result = validationResult(req)
   if (!result.isEmpty()) {
     return res.render("admin/edit-product", {
@@ -203,31 +203,40 @@ exports.postEditProduct = (req, res, next) => {
   //   })
   //   .catch(err => console.log(err))
 
-  Product.findById(id)
-    .then(product => {
-      if (!product) {
-        return res.redirect("/admin/products")
-      }
-      if (product.user_id.toString() !== req.user._id.toString()) {
-        return res.redirect("/admin/products")
-      }
-      product.title = title
-      if (image) {
-        deleteHelper.deleteFile(product.imageUrl);
-        product.imageUrl = image.path
-      }
-      product.price = price
-      product.description = description
-      return product.save()
-    }).then(result => {
-      res.redirect("/admin/products")
-    })
-    .catch(err => {
-      // console.log(err)
-      let error = new Error(err)
-      error.httpStatusCode = 500;
-      return next(error)
-    })
+  const product = await Product.findById(id)
+  if (!product) {
+    return res.redirect("/admin/products")
+  }
+  if (product.user_id.toString() !== req.user._id.toString()) {
+    return res.redirect("/admin/products")
+  }
+  product.price = price
+  product.title = title
+  product.description = description
+  if (image) {
+    // deleteHelper.deleteFile(product.imageUrl);
+    const fileName = Date.now() + "-" + req.file.originalname;
+    let remvUrl = product.imageUrl.split("/public/images/")[1]
+    remvUrl = decodeURIComponent(remvUrl)
+    const result = await supabase.storage.from("images").remove([remvUrl])
+    if (result.error) {
+      next(new Error("could'nt remove the old path"))
+    }
+    try {
+      const { data, error } = await supabase.storage.from("images").upload(fileName, req.file.buffer, { contentType: req.file.mimetype })
+      if (error) next(error);
+    } catch (err) {
+      next(err)
+    }
+    const args = await supabase.storage.from("images").getPublicUrl(fileName)
+    if (args.error) next(new Error("Error"));
+    product.imageUrl = args.data.publicUrl
+    await product.save()
+    return res.redirect("/admin/products")
+  } else {
+    await product.save()
+    return res.redirect("/admin/products")
+  }
 
 }
 
@@ -290,17 +299,26 @@ exports.deleteProduct = (req, res, next) => {
   Product.findById(productId)
     .then(product => {
       if (!product) {
-        return next(new Error("not found"))
+        return res.json({message: 'not found'})
       }
-      deleteHelper.deleteFile(product.imageUrl);
-      Product.deleteOne({ _id: productId, user_id: req.user._id })
+      // deleteHelper.deleteFile(product.imageUrl);
+      let remvUrl = product.imageUrl.split("/public/images/")[1]
+      remvUrl = decodeURIComponent(remvUrl)
+      return supabase.storage.from("images").remove([remvUrl])
+        .then(args => {
+          if (args.error) {
+            next(new Error("could'nt remove the old path"))
+          }
+          return Product.deleteOne({ _id: productId, user_id: req.user._id })
+        })
         .then(() => {
           // res.redirect("/admin/products")  // now use async js
           res.status(200).json({ message: 'success!' })
         })
     })
     .catch(err => {
-      res.status(500).json({ message: 'deleting product failed.' })
+      // res.status(500).json({ message: 'deleting product failed.' })
+      next(err)
       // let error = new Error(err)
       // error.httpStatusCode = 500;
       // return next(error)
